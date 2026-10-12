@@ -17,8 +17,8 @@ jobs:
           channel: 'stable'
       - name: Get packages
         run: flutter pub get
-      - name: Fix iOS folder for Icon
-        run: mkdir -p ios/Runner/Assets.xcassets/AppIcon.appiconset
+      - name: Create Android Project
+        run: flutter create. --platforms=android
       - name: Generate Launcher Icons
         run: dart run flutter_launcher_icons
       - name: Build APK
