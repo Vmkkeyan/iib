@@ -41,16 +41,14 @@ class _AgentHomePageState extends State<AgentHomePage> {
     super.dispose();
   }
 
-  void openCheckout({required int amount, required String planName}) {
-    // TODO: உங்கள் Razorpay LIVE Key-ஐ இங்கே போடுங்கள்
-    // Razorpay Dashboard -> Settings -> API Keys -> Live Key
+  void openCheckout({required int amount, required String planName, String currency = 'INR'}) {
     var options = {
       'key': 'rzp_live_YOUR_KEY_HERE', 
-      'amount': amount * 100, // 999 Rs = 99900 paise
+      'amount': amount * 100, 
+      'currency': currency,
       'name': 'IIB - International Innovator Bridge',
-      'description': planName,
+      'description': planName + ' (Yearly)',
       'prefill': {'contact': '9876543210', 'email': 'agent@iib.com'},
-      'external': {'wallets': ['paytm']}
     };
     try {
       _razorpay.open(options);
@@ -61,10 +59,10 @@ class _AgentHomePageState extends State<AgentHomePage> {
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     setState(() {
-      totalEarnings += 500; // Agent commission example
+      totalEarnings += 500;
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Payment Success: ${response.paymentId} - Amount will go to YOUR Bank Account!"), backgroundColor: Colors.green),
+      SnackBar(content: Text("Payment Success: ${response.paymentId} - Amount will go to YOUR Bank!"), backgroundColor: Colors.green),
     );
   }
 
@@ -103,34 +101,41 @@ class _AgentHomePageState extends State<AgentHomePage> {
               ),
             ),
             SizedBox(height: 20),
-            Text("IIB Premium Plans - Client Pay to YOU", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text("IIB Premium Plan - Yearly", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(height: 12),
-            _planCard("IIB Starter", "For Students - USA, UK, Canada", 999, Icons.school),
-            _planCard("IIB Innovator", "For Job Seekers - Germany, Australia", 1999, Icons.work),
-            _planCard("IIB Global", "For Investors - Full Support", 4999, Icons.public),
+            // A PLAN YEARLY - SINGLE CARD
+            Card(
+              elevation: 3,
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(children: [
+                      Icon(Icons.workspace_premium, color: Color(0xFF0A1931), size: 36),
+                      SizedBox(width: 12),
+                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text("IIB Premium - Yearly", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        Text("For Students, Job Seekers, Investors - USA, UK, Germany, Australia, Full Support - 1 Year Valid", style: TextStyle(fontSize: 12)),
+                      ])),
+                    ]),
+                    SizedBox(height: 16),
+                    Row(children: [
+                      Expanded(child: ElevatedButton(onPressed: () => openCheckout(amount: 1999, planName: "IIB Premium India", currency: "INR"), style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF0A1931), foregroundColor: Colors.white, padding: EdgeInsets.symmetric(vertical: 12)), child: Text("Pay ₹1999 / Year"))),
+                      SizedBox(width: 10),
+                      Expanded(child: ElevatedButton(onPressed: () => openCheckout(amount: 27, planName: "IIB Premium International", currency: "USD"), style: ElevatedButton.styleFrom(backgroundColor: Colors.amber.shade700, foregroundColor: Colors.black, padding: EdgeInsets.symmetric(vertical: 12)), child: Text("Pay \$27 / Year"))),
+                    ]),
+                  ],
+                ),
+              ),
+            ),
             SizedBox(height: 20),
             Container(
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(color: Colors.amber.shade100, borderRadius: BorderRadius.circular(8)),
-              child: Text("Note: Razorpay Live Key add செய்த பிறகு, Client Pay செய்யும் பணம் நேரடியாக உங்கள் Razorpay-ல் இணைக்கப்பட்ட Bank Account-க்கு வரும்.", style: TextStyle(fontSize: 12)),
+              child: Text("Note: Yearly Plan! ₹1999 India, \$27 International. Razorpay Live Key add செய்த பிறகு Client Pay பணம் நேரடியாக உங்கள் Bank Account-க்கு வரும்.", style: TextStyle(fontSize: 12)),
             )
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _planCard(String title, String desc, int price, IconData icon) {
-    return Card(
-      margin: EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: Icon(icon, color: Color(0xFF0A1931), size: 32),
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(desc),
-        trailing: ElevatedButton(
-          onPressed: () => openCheckout(amount: price, planName: title),
-          child: Text("Pay ₹$price"),
-          style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF0A1931), foregroundColor: Colors.white),
         ),
       ),
     );
