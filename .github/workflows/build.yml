@@ -18,7 +18,7 @@ jobs:
       - name: Get packages
         run: flutter pub get
       - name: Create Android Project
-        run: flutter create. --platforms=android
+        run: flutter create . --platforms=android
       - name: Generate Launcher Icons
         run: dart run flutter_launcher_icons
       - name: Build APK
